@@ -149,3 +149,12 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .notes-save { background: #7058df; color: #fff; }
 .notes-empty { color: #aaa6b1; font-size: 11px; padding: 20px 0; text-align: center; }
 @media (max-width: 530px) { .notes-drawer { width: 100vw; }.notes-header { padding-left: 17px; padding-right: 17px; }.notes-toolbar, .notes-list, .notes-editor { padding-left: 17px; padding-right: 17px; }.notes-smart-box, .notes-footer { margin-left: 17px; margin-right: 17px; }.notes-footer { margin-left: 0; margin-right: 0; padding-left: 17px; padding-right: 17px; } }
+
+/* Professor image hero */
+.hero-professor-visual { right: 0; top: 0; width: 56%; height: 100%; opacity: 1; overflow: hidden; }
+.hero-professor-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 68% 38%; mix-blend-mode: screen; opacity: .78; filter: saturate(.9) contrast(1.04); }
+.hero-image-shade { position: absolute; inset: 0; background: linear-gradient(90deg, #25222f 0%, rgba(37,34,47,.9) 10%, rgba(37,34,47,.18) 45%, rgba(37,34,47,.05) 100%), linear-gradient(0deg, rgba(37,34,47,.48), transparent 46%); }
+.hero-image-label { position: absolute; right: 32px; bottom: 27px; display: inline-flex; align-items: center; gap: 7px; color: #eeeaff; background: rgba(38,32,58,.72); border: 1px solid rgba(180,164,255,.35); border-radius: 99px; padding: 7px 10px; font-size: 10px; backdrop-filter: blur(5px); }
+.hero-image-label svg { color: #ad9dff; }
+@media (max-width: 800px) { .hero-professor-visual { width: 68%; right: -8%; opacity: .75; }.hero-professor-image { object-position: 68% 35%; }.hero-image-label { right: 13px; bottom: 19px; font-size: 9px; } }
+@media (max-width: 530px) { .hero-professor-visual { width: 100%; right: -19%; top: 91px; height: 270px; opacity: .58; }.hero-professor-image { object-position: 68% 30%; }.hero-image-shade { background: linear-gradient(90deg, #25222f 0%, rgba(37,34,47,.76) 25%, rgba(37,34,47,.08) 78%), linear-gradient(0deg, rgba(37,34,47,.7), transparent 55%); }.hero-image-label { display: none; } }

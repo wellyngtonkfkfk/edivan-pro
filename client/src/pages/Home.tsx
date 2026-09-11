@@ -102,14 +102,10 @@ function Overview({ onNavigate, isAuthenticated }: { onNavigate: (view: View) =>
             <button className="button button-ghost-light" onClick={() => onNavigate("cronograma")}>Ver meu plano <ArrowRight size={16} /></button>
           </div>
         </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="orbit orbit-large" />
-          <div className="orbit orbit-small" />
-          <div className="hero-atom"><Atom size={94} strokeWidth={1.1} /></div>
-          <div className="formula formula-one">F = m · a</div>
-          <div className="formula formula-two">ΔE = hf</div>
-          <div className="formula formula-three">v = Δs / Δt</div>
-          <div className="floating-dot dot-one" /><div className="floating-dot dot-two" /><div className="floating-dot dot-three" />
+        <div className="hero-visual hero-professor-visual" aria-hidden="true">
+          <img className="hero-professor-image" src="/manus-storage/ChatGPTImage11deset.de2026,00_20_18_db48a3c2.png" alt="Professor Edivan ensinando Física em seu laboratório" />
+          <div className="hero-image-shade" />
+          <div className="hero-image-label"><Atom size={13} /> Física é a linguagem do universo</div>
         </div>
       </section>
 
