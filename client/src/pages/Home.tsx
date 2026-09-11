@@ -17,6 +17,7 @@ import {
   Gauge,
   Lightbulb,
   Link2,
+  NotebookPen,
   LockKeyhole,
   Menu,
   MessageCircle,
@@ -26,13 +27,17 @@ import {
   Radio,
   Search,
   Sparkles,
+  Save,
+  Tag,
+  Trash2,
+  WandSparkles,
   Target,
   Trophy,
   Waves,
   X,
   Zap,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type View = "overview" | "aulas" | "praticar" | "ferramentas" | "cronograma" | "comunidade";
 
@@ -175,10 +180,45 @@ function CommunityView() {
   return <div className="content-stack"><div className="page-intro"><div><span className="eyebrow">Ponto de Apoio</span><h1>Dúvidas que viram aprendizado</h1><p>Pergunte, compartilhe seu raciocínio e aprenda com a comunidade.</p></div><button className="button button-primary"><Plus size={16} /> Fazer uma pergunta</button></div><div className="community-layout"><section className="panel questions-panel"><div className="panel-heading"><div><Pill tone="purple"><MessageCircle size={13} /> Comunidade</Pill><h2>Perguntas recentes</h2></div><button className="text-button">Ver todas <ChevronRight size={15} /></button></div>{questions.map((question) => <div className="question-item" key={question.title}><div className="question-avatar">{question.topic.charAt(0)}</div><div className="question-copy"><div><Pill>{question.topic}</Pill><small>{question.time}</small></div><strong>{question.title}</strong><span><MessageCircle size={13} /> {question.replies} respostas</span></div><ChevronRight size={17} /></div>)}</section><aside className="panel ai-panel"><div className="ai-orb"><BrainCircuit size={24} /></div><Pill tone="green">Em breve</Pill><h2>Edivan IA</h2><p>Seu tutor de Física baseado no conteúdo do professor, disponível para explicar conceitos passo a passo.</p><button className="button button-dark full-width">Quero ser avisado <ArrowRight size={15} /></button></aside></div><section className="real-life-banner compact-banner"><div className="real-life-copy"><Pill tone="amber"><Lightbulb size={13} /> Física Fora do Quadro</Pill><h2>Envie um fenômeno para explicar</h2><p>O que você vê no cotidiano também pode ser uma ótima pergunta de Física.</p></div><div className="phenomenon-orbit"><Atom size={66} /></div></section></div>;
 }
 
+type Note = { id: number; title: string; content: string; tags: string; updatedAt: string };
+
+function NotesDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [notes, setNotes] = useState<Note[]>(() => {
+    try {
+      const stored = localStorage.getItem("edivan-pro-notes");
+      return stored ? JSON.parse(stored) : [{ id: 1, title: "Leis de Newton", content: "A força resultante muda o movimento.\n\nF = m · a\n\nLembrete: sempre desenhar o diagrama de forças antes de calcular.", tags: "mecânica, revisão", updatedAt: "agora" }];
+    } catch { return [{ id: 1, title: "Minha primeira nota", content: "Escreva qualquer ideia aqui...", tags: "", updatedAt: "agora" }]; }
+  });
+  const [activeId, setActiveId] = useState(1);
+  const [saved, setSaved] = useState(true);
+  const active = notes.find((note) => note.id === activeId) ?? notes[0];
+
+  useEffect(() => { localStorage.setItem("edivan-pro-notes", JSON.stringify(notes)); }, [notes]);
+  if (!open || !active) return null;
+  const updateActive = (patch: Partial<Note>) => { setSaved(false); setNotes((current) => current.map((note) => note.id === active.id ? { ...note, ...patch, updatedAt: "agora" } : note)); };
+  const createNote = () => { const newNote = { id: Date.now(), title: "Nova anotação", content: "", tags: "", updatedAt: "agora" }; setNotes((current) => [newNote, ...current]); setActiveId(newNote.id); setSaved(false); };
+  const deleteActive = () => { if (notes.length === 1) return; const next = notes.filter((note) => note.id !== active.id); setNotes(next); setActiveId(next[0].id); };
+  const applySmartAction = (action: "organize" | "summary" | "questions") => {
+    const lines = active.content.split("\n").map((line) => line.trim()).filter(Boolean);
+    if (action === "organize") updateActive({ content: lines.map((line) => line.startsWith("•") ? line : `• ${line}`).join("\n") });
+    if (action === "summary") updateActive({ content: `${active.content}\n\nResumo inteligente:\n${lines.slice(0, 2).join(" ") || "Adicione conteúdo para gerar um resumo."}` });
+    if (action === "questions") updateActive({ content: `${active.content}\n\nPerguntas para revisar:\n1. Qual é a ideia principal?\n2. Qual fórmula ou exemplo comprova isso?\n3. Como eu explicaria este conceito para outra pessoa?` });
+  };
+  return <><button className="notes-backdrop" onClick={onClose} aria-label="Fechar anotações" /><aside className="notes-drawer" aria-label="Anotações inteligentes">
+    <header className="notes-header"><div><div className="notes-kicker"><NotebookPen size={14} /> Laboratório pessoal</div><h2>Minhas anotações</h2><p>Escreva, organize e conecte suas ideias.</p></div><button className="notes-close" onClick={onClose} aria-label="Fechar"><X size={17} /></button></header>
+    <div className="notes-toolbar"><button onClick={() => updateActive({ content: `${active.content}\n\n**Conceito:** ` })} title="Inserir conceito">B</button><button onClick={() => updateActive({ content: `${active.content}\n• ` })} title="Inserir lista">☷</button><button onClick={() => updateActive({ content: `${active.content}\n\nFórmula: ` })} title="Inserir fórmula">f(x)</button><span className="toolbar-spacer" /><button onClick={() => setSaved(true)} title="Salvar"><Save size={14} /></button></div>
+    <div className="notes-list"><button className="new-note-button" onClick={createNote} title="Nova anotação"><Plus size={16} /></button>{notes.map((note) => <button className={`note-chip ${note.id === active.id ? "note-chip-active" : ""}`} key={note.id} onClick={() => setActiveId(note.id)}><strong>{note.title || "Sem título"}</strong><span>{note.updatedAt}</span></button>)}</div>
+    <div className="notes-editor"><input className="notes-title-input" value={active.title} onChange={(event) => updateActive({ title: event.target.value })} placeholder="Título da anotação" /><textarea className="notes-content" value={active.content} onChange={(event) => updateActive({ content: event.target.value })} placeholder="Escreva qualquer coisa: uma dúvida, resumo, fórmula, ideia ou plano de estudo..." /><div className="notes-tags"><Tag size={14} /><input value={active.tags} onChange={(event) => updateActive({ tags: event.target.value })} placeholder="Adicione tags: mecânica, prova, dúvida" /></div></div>
+    <section className="notes-smart-box"><div className="notes-smart-head"><WandSparkles size={15} /> Assistente inteligente de estudo</div><p>Use ações rápidas para transformar seu texto em material de revisão. Você pode escrever livremente; nada será apagado sem sua confirmação.</p><div className="notes-smart-actions"><button onClick={() => applySmartAction("organize")}><Check size={12} /> Organizar tópicos</button><button onClick={() => applySmartAction("summary")}><Sparkles size={12} /> Gerar resumo</button><button onClick={() => applySmartAction("questions")}><CircleHelp size={12} /> Criar perguntas</button></div></section>
+    <footer className="notes-footer"><span className="notes-saved">{saved ? <Check size={13} /> : <Save size={13} />} {saved ? "Salvo neste dispositivo" : "Alterações pendentes"}</span><div className="notes-footer-actions"><button className="notes-delete" onClick={deleteActive} disabled={notes.length === 1}><Trash2 size={13} /> Excluir</button><button className="notes-save" onClick={() => setSaved(true)}><Save size={13} /> Salvar nota</button></div></footer>
+  </aside></>;
+}
+
 export default function Home() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const [view, setView] = useState<View>("overview");
   const [mobileNav, setMobileNav] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const currentLabel = useMemo(() => navItems.find((item) => item.id === view)?.label ?? "Visão geral", [view]);
 
   const renderView = () => {
@@ -198,6 +238,7 @@ export default function Home() {
       <div className="sidebar-bottom"><div className="sidebar-callout"><div className="callout-icon"><Sparkles size={17} /></div><strong>Aprenda com estratégia</strong><span>Seu próximo marco está mais perto do que parece.</span><button onClick={() => setView("cronograma")}>Ver meu plano <ArrowRight size={14} /></button></div><div className="sidebar-user">{loading ? <div className="user-skeleton" /> : <><div className="avatar">{user?.name?.charAt(0) ?? "E"}</div><div className="user-info"><strong>{user?.name ?? "Aluno visitante"}</strong><span>{isAuthenticated ? "Aluno Edivan PRO" : "Explore a plataforma"}</span></div>{isAuthenticated ? <button className="more-button" onClick={logout} title="Sair">···</button> : <button className="more-button" onClick={startLogin} title="Entrar">↗</button>}</>}</div></div>
     </aside>
     {mobileNav && <button className="mobile-overlay" onClick={() => setMobileNav(false)} aria-label="Fechar menu" />}
-    <main className="main-content"><header className="topbar"><div className="topbar-left"><button className="mobile-menu" onClick={() => setMobileNav(true)} aria-label="Abrir menu"><Menu size={20} /></button><div className="breadcrumb"><span>Minha jornada</span><ChevronRight size={14} /><strong>{currentLabel}</strong></div></div><div className="topbar-actions"><button className="topbar-icon" aria-label="Dúvidas"><CircleHelp size={18} /></button><button className="topbar-icon notification-dot" aria-label="Notificações"><Radio size={18} /></button><div className="topbar-avatar">{user?.name?.charAt(0) ?? "E"}</div></div></header><div className="page-container">{renderView()}</div></main>
+    <main className="main-content"><header className="topbar"><div className="topbar-left"><button className="mobile-menu" onClick={() => setMobileNav(true)} aria-label="Abrir menu"><Menu size={20} /></button><div className="breadcrumb"><span>Minha jornada</span><ChevronRight size={14} /><strong>{currentLabel}</strong></div></div><div className="topbar-actions"><button className="topbar-icon" onClick={() => setNotesOpen(true)} aria-label="Abrir anotações" title="Anotações inteligentes"><NotebookPen size={18} /></button><button className="topbar-icon" aria-label="Dúvidas"><CircleHelp size={18} /></button><button className="topbar-icon notification-dot" aria-label="Notificações"><Radio size={18} /></button><div className="topbar-avatar">{user?.name?.charAt(0) ?? "E"}</div></div></header><div className="page-container">{renderView()}</div></main>
+    <NotesDrawer open={notesOpen} onClose={() => setNotesOpen(false)} />
   </div>;
 }
