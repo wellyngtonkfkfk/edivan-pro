@@ -15,6 +15,8 @@ import {
   Compass,
   Flame,
   Gauge,
+  GraduationCap,
+  HeartHandshake,
   Lightbulb,
   Link2,
   NotebookPen,
@@ -24,6 +26,7 @@ import {
   Network,
   Play,
   Plus,
+  Quote,
   Radio,
   Search,
   Sparkles,
@@ -33,13 +36,14 @@ import {
   WandSparkles,
   Target,
   Trophy,
+  UserRound,
   Waves,
   X,
   Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-type View = "overview" | "aulas" | "praticar" | "ferramentas" | "cronograma" | "comunidade";
+type View = "overview" | "aulas" | "praticar" | "ferramentas" | "cronograma" | "comunidade" | "sobre";
 
 type IconType = typeof Atom;
 
@@ -50,6 +54,7 @@ const navItems: { id: View; label: string; icon: IconType }[] = [
   { id: "ferramentas", label: "Ferramentas", icon: Network },
   { id: "cronograma", label: "Cronograma", icon: CalendarDays },
   { id: "comunidade", label: "Comunidade", icon: MessageCircle },
+  { id: "sobre", label: "Sobre o Edivan", icon: UserRound },
 ];
 
 const lessons = [
@@ -145,6 +150,11 @@ function Overview({ onNavigate, isAuthenticated }: { onNavigate: (view: View) =>
       <section className="real-life-banner" onClick={() => onNavigate("comunidade")}>
         <div className="real-life-copy"><Pill tone="amber"><Lightbulb size={13} /> Física Fora do Quadro</Pill><h2>Por que o celular esquenta quando você joga?</h2><p>Descubra a física por trás de situações que acontecem com você todos os dias.</p><button className="text-button text-button-light">Explorar curiosidade <ArrowRight size={16} /></button></div><div className="phone-illustration"><div className="phone-frame"><div className="phone-screen"><div className="phone-sun" /><div className="phone-wave" /></div></div><div className="phone-spark spark-a">+</div><div className="phone-spark spark-b">×</div></div>
       </section>
+      <section className="teacher-teaser" onClick={() => onNavigate("sobre")}>
+        <div className="teacher-teaser-image"><img src="/manus-storage/ChatGPTImage11deset.de2026,00_20_18_db48a3c2.png" alt="Professor Edivan no laboratório" /></div>
+        <div className="teacher-teaser-copy"><span className="eyebrow">Conheça quem ensina</span><h2>Física com clareza, estratégia e propósito.</h2><p>O professor Edivan transforma conceitos difíceis em caminhos possíveis para cada aluno.</p><button className="text-button">Conhecer o método Edivan PRO <ArrowRight size={16} /></button></div>
+        <div className="teacher-teaser-badge"><HeartHandshake size={16} /> Aprender com sentido</div>
+      </section>
     </div>
   );
 }
@@ -174,6 +184,21 @@ function ScheduleView() {
 
 function CommunityView() {
   return <div className="content-stack"><div className="page-intro"><div><span className="eyebrow">Ponto de Apoio</span><h1>Dúvidas que viram aprendizado</h1><p>Pergunte, compartilhe seu raciocínio e aprenda com a comunidade.</p></div><button className="button button-primary"><Plus size={16} /> Fazer uma pergunta</button></div><div className="community-layout"><section className="panel questions-panel"><div className="panel-heading"><div><Pill tone="purple"><MessageCircle size={13} /> Comunidade</Pill><h2>Perguntas recentes</h2></div><button className="text-button">Ver todas <ChevronRight size={15} /></button></div>{questions.map((question) => <div className="question-item" key={question.title}><div className="question-avatar">{question.topic.charAt(0)}</div><div className="question-copy"><div><Pill>{question.topic}</Pill><small>{question.time}</small></div><strong>{question.title}</strong><span><MessageCircle size={13} /> {question.replies} respostas</span></div><ChevronRight size={17} /></div>)}</section><aside className="panel ai-panel"><div className="ai-orb"><BrainCircuit size={24} /></div><Pill tone="green">Em breve</Pill><h2>Edivan IA</h2><p>Seu tutor de Física baseado no conteúdo do professor, disponível para explicar conceitos passo a passo.</p><button className="button button-dark full-width">Quero ser avisado <ArrowRight size={15} /></button></aside></div><section className="real-life-banner compact-banner"><div className="real-life-copy"><Pill tone="amber"><Lightbulb size={13} /> Física Fora do Quadro</Pill><h2>Envie um fenômeno para explicar</h2><p>O que você vê no cotidiano também pode ser uma ótima pergunta de Física.</p></div><div className="phenomenon-orbit"><Atom size={66} /></div></section></div>;
+}
+
+function AboutView() {
+  const principles = [
+    { icon: Lightbulb, title: "Clareza antes da fórmula", text: "Todo conceito começa por uma pergunta simples e uma explicação que respeita o ritmo do aluno." },
+    { icon: Target, title: "Prática com estratégia", text: "Exercícios são organizados para mostrar o raciocínio, revelar erros e construir autonomia." },
+    { icon: HeartHandshake, title: "Acompanhamento próximo", text: "Cada dúvida é uma oportunidade de ajustar a rota e tornar o estudo mais humano." },
+  ];
+  return <div className="content-stack about-page">
+    <section className="about-hero"><div className="about-hero-copy"><Pill tone="purple"><Atom size={13} /> Sobre o professor</Pill><h1>Mais que ensinar Física.<br /><em>Ensinar a pensar.</em></h1><p>Eu sou Edivan, professor de Física e criador do Edivan PRO. Acredito que aprender fica mais leve quando o aluno entende o porquê antes de decorar o como.</p><div className="about-signature"><span>EDIVAN</span><small>Professor de Física · Edivan PRO</small></div></div><div className="about-hero-photo"><img src="/manus-storage/ChatGPTImage11deset.de2026,00_20_18_db48a3c2.png" alt="Professor Edivan segurando um modelo molecular" /><div className="photo-caption"><Quote size={14} /> A Física é a linguagem do universo.</div></div></section>
+    <section className="about-story-grid"><article className="panel story-panel"><span className="eyebrow">A missão</span><h2>Transformar curiosidade em domínio.</h2><p>O Edivan PRO nasceu para aproximar a Física da vida real. Aqui, uma equação não é um obstáculo: é uma ferramenta para interpretar movimento, energia, tecnologia e o mundo ao redor.</p><p>O foco é construir uma base forte, praticar com intenção e dar ao aluno confiança para resolver problemas novos.</p><div className="story-stat-row"><div><strong>3</strong><span>pilares de aprendizagem</span></div><div><strong>1</strong><span>rota para cada perfil</span></div><div><strong>∞</strong><span>perguntas possíveis</span></div></div></article><aside className="method-highlight"><div className="method-orbit"><Atom size={45} /></div><span className="eyebrow">A promessa</span><h2>Menos decoreba.<br />Mais compreensão.</h2><p>Aprenda a enxergar a Física acontecendo antes mesmo de colocar os números no papel.</p><button className="button button-primary">Começar minha jornada <ArrowRight size={15} /></button></aside></section>
+    <section><div className="section-heading-row about-heading"><div><span className="eyebrow">Método Edivan PRO</span><h2>Três movimentos para dominar a Física</h2></div><Pill tone="green"><Check size={13} /> Pensado para alunos reais</Pill></div><div className="principles-grid">{principles.map((principle, index) => { const Icon = principle.icon; return <article className="principle-card" key={principle.title}><div className="principle-index">0{index + 1}</div><div className="principle-icon"><Icon size={20} /></div><h3>{principle.title}</h3><p>{principle.text}</p></article>; })}</div></section>
+    <section><div className="section-heading-row about-heading"><div><span className="eyebrow">Por trás da plataforma</span><h2>Um professor, vários ângulos da Física</h2></div></div><div className="teacher-gallery"><div className="gallery-card gallery-main"><img src="/manus-storage/ChatGPTImage11deset.de2026,00_20_18_db48a3c2.png" alt="Edivan explicando Física" /><div><strong>Na sala de aula</strong><span>Explicações que conectam teoria e prática.</span></div></div><div className="gallery-card gallery-detail"><img src="/manus-storage/ChatGPTImage11deset.de2026,00_20_18_db48a3c2.png" alt="Detalhe do professor Edivan com fórmulas" /><div><strong>O raciocínio por trás</strong><span>Fórmula é só o começo.</span></div></div><div className="gallery-card gallery-lab"><img src="/manus-storage/ChatGPTImage11deset.de2026,00_20_18_db48a3c2.png" alt="Laboratório de Física do Edivan" /><div><strong>Física no mundo</strong><span>Observe. Questione. Entenda.</span></div></div></div></section>
+    <section className="about-cta"><div><Pill tone="amber"><GraduationCap size={13} /> Pronto para começar?</Pill><h2>Seu próximo entendimento pode mudar tudo.</h2><p>Escolha uma aula e venha descobrir a Física de um jeito diferente.</p></div><button className="button button-primary">Explorar aulas <ArrowRight size={16} /></button></section>
+  </div>;
 }
 
 type Note = { id: number; title: string; content: string; tags: string; updatedAt: string };
@@ -223,6 +248,7 @@ export default function Home() {
     if (view === "praticar") return <PracticeView />;
     if (view === "ferramentas") return <ToolsView />;
     if (view === "cronograma") return <ScheduleView />;
+    if (view === "sobre") return <AboutView />;
     return <CommunityView />;
   };
 
